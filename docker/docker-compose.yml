@@ -1,1 +1,34 @@
 version: "3.0"
+services:
+        database:
+                build: ./database
+                image: database
+                container_name: database
+                hostname: database
+                restart: always
+                networks:
+                        - app_network
+                environment:
+                        MYSQL_ROOT_PASSWORD: mypass
+                        MYSQL_DATABASE: lexsearch
+                ports:
+                        - 3306:3306
+        webservice:
+                build: ./webservice
+                image: webservice
+                container_name: webservice
+                hostname: webservice
+                #restart: always
+                networks:
+                        - app_network
+                depends_on:
+                        - database
+                volumes:
+                        - ./webservice:/code
+                expose:
+                        - 2137
+                ports:  
+                        - 2137:2137
+                          # command: ['python3', 'main.py']
+networks:
+        app_network:
