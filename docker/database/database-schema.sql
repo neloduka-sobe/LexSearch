@@ -13,8 +13,8 @@ CREATE TABLE `episodes` (
 	`number` int(11) NOT NULL,
 	`title` varchar(128) NOT NULL COLLATE utf8mb4_unicode_ci,
 	`yt_id` char(11) NOT NULL COLLATE utf8mb4_unicode_ci,
-	`guests` set NOT NULL DEFAULT set(),
-	/*`episode_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,*/
+	`guests` json,
+	`episode_date` timestamp default CURRENT_TIMESTAMP,
 	`description` text COLLATE utf8mb4_unicode_ci,
 	PRIMARY KEY (`episode_id`)
 ); ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
