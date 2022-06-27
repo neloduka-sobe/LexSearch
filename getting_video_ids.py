@@ -3,6 +3,8 @@
 ### Imports
 import scrapetube # used to get playlist and videos data
 import spacy # used to find Guests names
+from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube transcripts
+import json # used to create json in order to add it into the database
 
 ### Constants
 PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
@@ -66,6 +68,28 @@ for video in videos:
             guests.append(first_part)
 
 
+    # Creating data to be added into timestamps table
+    json_text_index = 0 # used to track the id of the character in the timestamp_full_text
+    timestamp_json = [] # timestamp jeson to be added to the database
+    timestamp_full_text = '' # full text of the podcast to be added to the database
+
+    srt = YouTubeTranscriptApi.get_transcript(yt_id)
+    # iterating through every verse of the transcript
+    for part in srt:
+        timestamp_full_text += (part.get('text') + ' ') # adding new verse to the full text
+        dlength= (len(part.get('text')) + 1) # getting the length of the added text
+
+        timestamp_json.append({
+            "first_index": json_text_index,
+            "last_index": (json_text_index + dlength),
+            "start_time": part.get('start')
+            })
+
+        json_text_index += dlength
+
+
+    # ADD DATA TO THE DATABASE TODO
+
     # printing created vars
     print(f"{yt_id=}")
     print(f"{first_part=}")
@@ -74,5 +98,6 @@ for video in videos:
     print(f"{video_number=}")
     print(f"{yt_title=}")
     print(f"{guests=}")
+    print(f"{timestamp_json=}")
     print()
 
