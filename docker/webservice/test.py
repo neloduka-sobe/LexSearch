@@ -18,3 +18,7 @@ except mariadb.Error as e:
 
 # Get Cursor
 cur = conn.cursor()
+cur.execute(
+    "show tables;")
+for i in cur:
+    print(i)

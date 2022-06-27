@@ -1,5 +1,4 @@
 scrapetube>=2.2.2
 spacy>=3.2.1
-mariadb
+mariadb==1.0.11
 youtube_transcript_api
-json

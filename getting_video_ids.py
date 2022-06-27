@@ -5,6 +5,8 @@ import scrapetube # used to get playlist and videos data
 import spacy # used to find Guests names
 from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube transcripts
 import json # used to create json in order to add it into the database
+import mariadb # used to connect to the mariadb database
+import sys # used to exit when exception occurs
 
 ### Constants
 PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
@@ -89,6 +91,20 @@ for video in videos:
 
 
     # ADD DATA TO THE DATABASE TODO
+
+    # connect to MariaDB
+    try:
+        conn = mariadb.connect(
+            user="root",
+            password="mypass",
+            host="database",
+            port=3306,
+            database="lexsearch"
+        )
+    except mariadb.Error as e:
+        print(f"Error connecting to database: {e}")
+        sys.exit(1)
+    cur = conn.cursor()
 
     # printing created vars
     print(f"{yt_id=}")
