@@ -18,7 +18,11 @@ except mariadb.Error as e:
 
 # Get Cursor
 cur = conn.cursor()
+video_number = 1
+yt_title = 'abcd'
+yt_id = '5qap5aO4i9A'
 cur.execute(
-    "show tables;")
-for i in cur:
-    print(i)
+        "INSERT INTO episodes (number,title,yt_id) VALUES (?,?,?)",
+        (video_number, yt_title, yt_id)
+                )
+conn.close()

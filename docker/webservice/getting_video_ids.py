@@ -19,7 +19,6 @@ videos = scrapetube.get_playlist(PODCAST_PLAYLIST)
 
 
 for video in videos:
-    print(video)
 
     # getting yt_id and title form playlist
     yt_id = video['videoId']
@@ -75,20 +74,30 @@ for video in videos:
     json_text_index = 0 # used to track the id of the character in the timestamp_full_text
     timestamp_json = [] # timestamp jeson to be added to the database
     timestamp_full_text = '' # full text of the podcast to be added to the database
+    is_transcript_enabled = 1 # states whether there is a transcript for the episode
 
-    srt = YouTubeTranscriptApi.get_transcript(yt_id)
-    # iterating through every verse of the transcript
-    for part in srt:
-        timestamp_full_text += (part.get('text') + ' ') # adding new verse to the full text
-        dlength= (len(part.get('text')) + 1) # getting the length of the added text
+    try:
+        srt = YouTubeTranscriptApi.get_transcript(yt_id)
 
-        timestamp_json.append({
-            "first_index": json_text_index,
-            "last_index": (json_text_index + dlength),
-            "start_time": part.get('start')
-            })
+    except Exception as e:
+        # When youtube_transcripts are disabled
+        print(e)
+        is_transcript_enabled = 0
 
-        json_text_index += dlength
+    finally:
+
+        # iterating through every verse of the transcript
+        for part in srt:
+            timestamp_full_text += (part.get('text') + ' ') # adding new verse to the full text
+            dlength= (len(part.get('text')) + 1) # getting the length of the added text
+
+            timestamp_json.append({
+                "first_index": json_text_index,
+                "last_index": (json_text_index + dlength),
+                "start_time": part.get('start')
+                })
+
+            json_text_index += dlength
 
 
     # ADD DATA TO THE DATABASE TODO
@@ -105,19 +114,24 @@ for video in videos:
     except mariadb.Error as e:
         print(f"Error connecting to database: {e}")
         sys.exit(1)
+
+    # create database cursor
     cur = conn.cursor()
+
 
     # adding episode data to the database
     try:
-        pass
         cur.execute(
-        "INSERT INTO episodes (number,title,yt_id) VALUES (?,?,?)",
-        (video_number, yt_title, yt_id)
-                )
+        "INSERT INTO episodes (number,title,yt_id,transcript_enabled) VALUES (?,?,?,?)",
+        (video_number, yt_title, yt_id,is_transcript_enabled)
+        )
+        conn.commit()
     except mariadb.Error as e:
         print(f"Error: {e}")
 
+
     # printing created vars
+    '''
     print(f"{yt_id=}")
     print(f"{first_part=}")
     print(f"{second_part=}")
@@ -127,6 +141,7 @@ for video in videos:
     print(f"{guests=}")
     print(f"{timestamp_json=}")
     print()
+    '''
 
 # closing connection with the database
 conn.close()
