@@ -13,8 +13,7 @@ CREATE TABLE `episodes` (
 	`number` int(11) NOT NULL,
 	`title` varchar(128) NOT NULL COLLATE utf8mb4_unicode_ci,
 	`yt_id` char(11) NOT NULL COLLATE utf8mb4_unicode_ci,
-	`episode_date` timestamp default CURRENT_TIMESTAMP,
-	`description` text COLLATE utf8mb4_unicode_ci,
+	`edit_date` timestamp default CURRENT_TIMESTAMP,
 	PRIMARY KEY (`episode_id`)
 ); 
 

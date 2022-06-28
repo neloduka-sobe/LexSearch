@@ -110,7 +110,7 @@ for video in videos:
     # adding episode data to the database
     try:
         pass
-        cursor.execute(
+        cur.execute(
         "INSERT INTO episodes (number,title,yt_id) VALUES (?,?,?)",
         (video_number, yt_title, yt_id)
                 )
