@@ -54,7 +54,7 @@ for video in videos:
 
     # if guest is known for being problematic for spacy then use first_part as guest name
     if first_part in PROBLEMATIC_GUESTS:
-        guests.append(first_part)
+        guests.append(first_part.strip())
     else:
 
         # if not add all entities in first_part into guests array
@@ -71,7 +71,7 @@ for video in videos:
 
         # if guest wasnt found in second_string, this means it is inside first string, but wasn's recognized properly
         if guests == []:
-            guests.append(first_part)
+            guests.append(first_part.strip())
 
 
     # Creating data to be added into timestamps table
@@ -128,6 +128,7 @@ for video in videos:
         "INSERT INTO episodes (number,title,yt_id,transcript_enabled) VALUES (?,?,?,?)",
         (video_number, yt_title, yt_id,is_transcript_enabled)
         )
+        episode_id = cur.lastrowid
         conn.commit()
         cur.close()
 
@@ -149,8 +150,6 @@ for video in videos:
         for index, guest in enumerate(guests):
 
 
-
-            #### TUTAJ
             cur = conn.cursor(buffered=True)
             cur.execute(
             "SELECT * FROM guests WHERE name=?",
@@ -160,9 +159,8 @@ for video in videos:
 
             for result in cur:
                 if result:
-                    guests_ids.append(result[0])
-                    guests_in_db.append(True)
-                    break
+                    guests_ids[index] = result[0]
+                    guests_in_db[index] = True
 
             cur.fetchall()
             tmp = cur.nextset()
@@ -192,8 +190,9 @@ for video in videos:
             (value,)
             )
             conn.commit()
+
             for i in cur:
-                guests_ids[index] = i[0] 
+                guests_ids[index] = i[0]
 
             cur.close()
     except mariadb.Error as e:
@@ -206,7 +205,22 @@ for video in videos:
     print(guests_ids)
     print(guests_in_db)
 
-    # commit changes after each iteration
+    # adding appearances
+
+    try:
+        for guest_id in guests_ids:
+            cur = conn.cursor(buffered=True)
+            cur.execute(
+            "INSERT INTO appearances (episode_id, guest_id) VALUES (?,?)",
+            (episode_id,guest_id,)
+            )
+            conn.commit()
+            cur.close()
+
+    except mariadb.Error as e:
+        print(f"Error 4: {e}")
+        conn.close()
+        sys.exit(1)
 
 
     # printing created vars

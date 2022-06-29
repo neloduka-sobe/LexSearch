@@ -2,7 +2,7 @@ use lexsearch;
 DROP TABLE IF EXISTS `guests`;
 CREATE TABLE `guests` (
 	`guest_id` int(11) NOT NULL AUTO_INCREMENT,
-	`name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+	`name` varchar(64) DEFAULT NULL,
 	PRIMARY KEY (`guest_id`)
 );
 
