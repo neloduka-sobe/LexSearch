@@ -100,7 +100,6 @@ for video in videos:
             json_text_index += dlength
 
 
-    # ADD DATA TO THE DATABASE TODO
 
     # connect to MariaDB
     try:
@@ -113,6 +112,7 @@ for video in videos:
         )
     except mariadb.Error as e:
         print(f"Error connecting to database: {e}")
+        conn.close()
         sys.exit(1)
 
     # create database cursor
@@ -124,29 +124,73 @@ for video in videos:
         "INSERT INTO episodes (number,title,yt_id,transcript_enabled) VALUES (?,?,?,?)",
         (video_number, yt_title, yt_id,is_transcript_enabled)
         )
+        conn.commit()
     except mariadb.Error as e:
-        print(f"Error: {e}")
+        print(f"Error 1: {e}")
+        conn.close()
         sys.exit(1)
 
 
-    # adding guests
+
+    ###############################
+    # ADD DATA TO THE DATABASE TODO
+
+    # checking whether guests are already in the database
+    guests_ids = [None for i in guests] # database ids of the guests
+    guests_in_db = []
     try:
-        for guest in guests:
-            in_the_database = False # True if guest is already in the database
+        for index, guest in enumerate(guests):
+
+            guests_in_db.append(False) # True if guest is already in the database
+
+
+            #### TUTAJ
             cur.execute(
             "SELECT * FROM guests WHERE name=?",
             (guest,)
             )
+            conn.commit()
 
             for result in cur:
                 if result:
-                    in_the_database = True
+                    guests_in_db[index] = True
+                    guests_ids.append(result[0])
+
     except mariadb.Error as e:
-        print(f"Error: {e}")
+        print(f"Error 2: {e}")
+        conn.close()
         sys.exit(1)
 
+    # adding guests
+
+    try:
+        for index, value in enumerate(guests):
+            if not guests_in_db[index]:
+                cur.execute(
+                "INSERT INTO guests (name) VALUES (?)",
+                (value,)
+                ) 
+                conn.commit()
+
+                # get id of an added guest
+                cur.execute(
+                "SELECT guest_id FROM guests WHERE name=?",
+                (value,)
+                )
+                conn.commit()
+                for i in cur:
+                    guests_ids[index] = i[0] 
+
+    except mariadb.Error as e:
+        print(f"Error 3: {e}")
+        conn.close()
+        sys.exit(1)
+
+
+
+    print(guests_ids)
+
     # commit changes after each iteration
-    conn.commit()
 
 
     # printing created vars
