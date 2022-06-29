@@ -118,16 +118,35 @@ for video in videos:
     # create database cursor
     cur = conn.cursor()
 
-
     # adding episode data to the database
     try:
         cur.execute(
         "INSERT INTO episodes (number,title,yt_id,transcript_enabled) VALUES (?,?,?,?)",
         (video_number, yt_title, yt_id,is_transcript_enabled)
         )
-        conn.commit()
     except mariadb.Error as e:
         print(f"Error: {e}")
+        sys.exit(1)
+
+
+    # adding guests
+    try:
+        for guest in guests:
+            in_the_database = False # True if guest is already in the database
+            cur.execute(
+            "SELECT * FROM guests WHERE name=?",
+            (guest,)
+            )
+
+            for result in cur:
+                if result:
+                    in_the_database = True
+    except mariadb.Error as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    # commit changes after each iteration
+    conn.commit()
 
 
     # printing created vars
