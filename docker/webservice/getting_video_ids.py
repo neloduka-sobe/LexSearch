@@ -7,6 +7,7 @@ from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube tr
 import json # used to create json in order to add it into the database
 import mariadb # used to connect to the mariadb database
 import sys # used to exit when exception occurs
+from time import sleep
 
 ### Constants
 PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
@@ -116,7 +117,7 @@ for video in videos:
         sys.exit(1)
 
     # create database cursor
-    cur = conn.cursor()
+    cur = conn.cursor(buffered=True)
 
     # adding episode data to the database
     try:
@@ -125,6 +126,8 @@ for video in videos:
         (video_number, yt_title, yt_id,is_transcript_enabled)
         )
         conn.commit()
+        cur.close()
+
     except mariadb.Error as e:
         print(f"Error 1: {e}")
         conn.close()
@@ -138,6 +141,7 @@ for video in videos:
     # checking whether guests are already in the database
     guests_ids = [None for i in guests] # database ids of the guests
     guests_in_db = []
+
     try:
         for index, guest in enumerate(guests):
 
@@ -145,6 +149,7 @@ for video in videos:
 
 
             #### TUTAJ
+            cur = conn.cursor(buffered=True)
             cur.execute(
             "SELECT * FROM guests WHERE name=?",
             (guest,)
@@ -156,6 +161,11 @@ for video in videos:
                     guests_in_db[index] = True
                     guests_ids.append(result[0])
 
+            cur.fetchall()
+            tmp = cur.nextset()
+            cur.close()
+            sleep(1)
+
     except mariadb.Error as e:
         print(f"Error 2: {e}")
         conn.close()
@@ -165,22 +175,24 @@ for video in videos:
 
     try:
         for index, value in enumerate(guests):
+            cur = conn.cursor(buffered=True)
             if not guests_in_db[index]:
                 cur.execute(
-                "INSERT INTO guests (name) VALUES (?)",
+                "INSERT INTO guests (name) VALUES (?);",
                 (value,)
                 ) 
                 conn.commit()
 
                 # get id of an added guest
                 cur.execute(
-                "SELECT guest_id FROM guests WHERE name=?",
+                "SELECT guest_id FROM guests WHERE name=?;",
                 (value,)
                 )
                 conn.commit()
                 for i in cur:
                     guests_ids[index] = i[0] 
 
+            cur.close()
     except mariadb.Error as e:
         print(f"Error 3: {e}")
         conn.close()
