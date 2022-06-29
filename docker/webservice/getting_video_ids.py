@@ -13,6 +13,7 @@ from time import sleep
 PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
 FALSE_POSITIVES_NAMES = ["Black Holes", "Email", "Oumuamua", "Deep Learning", "Carl Sagan", "Wu-Tang Clan", "Comedy"] # False positive recognised guests
 PROBLEMATIC_GUESTS = ["Luís and João Batalha", "Dmitry Korkin"] # Guests that are not recognised correctly by spacy
+BLOCKED_VIDEOS_IDS = ['6ePR2TWYVkI'] # Youtube id's of the videos that are not part of a podcast
 
 ### Setups
 npl = spacy.load("en_core_web_sm")
@@ -20,6 +21,8 @@ videos = scrapetube.get_playlist(PODCAST_PLAYLIST)
 
 
 for video in videos:
+    if video['videoId'] in BLOCKED_VIDEOS_IDS:
+        continue
 
     # getting yt_id and title form playlist
     yt_id = video['videoId']
@@ -140,12 +143,11 @@ for video in videos:
 
     # checking whether guests are already in the database
     guests_ids = [None for i in guests] # database ids of the guests
-    guests_in_db = []
+    guests_in_db = [False for i in guests]
 
     try:
         for index, guest in enumerate(guests):
 
-            guests_in_db.append(False) # True if guest is already in the database
 
 
             #### TUTAJ
@@ -158,13 +160,13 @@ for video in videos:
 
             for result in cur:
                 if result:
-                    guests_in_db[index] = True
                     guests_ids.append(result[0])
+                    guests_in_db.append(True)
+                    break
 
             cur.fetchall()
             tmp = cur.nextset()
             cur.close()
-            sleep(1)
 
     except mariadb.Error as e:
         print(f"Error 2: {e}")
@@ -176,6 +178,7 @@ for video in videos:
     try:
         for index, value in enumerate(guests):
             cur = conn.cursor(buffered=True)
+
             if not guests_in_db[index]:
                 cur.execute(
                 "INSERT INTO guests (name) VALUES (?);",
@@ -183,14 +186,14 @@ for video in videos:
                 ) 
                 conn.commit()
 
-                # get id of an added guest
-                cur.execute(
-                "SELECT guest_id FROM guests WHERE name=?;",
-                (value,)
-                )
-                conn.commit()
-                for i in cur:
-                    guests_ids[index] = i[0] 
+            # get id of an added guest
+            cur.execute(
+            "SELECT guest_id FROM guests WHERE name=?;",
+            (value,)
+            )
+            conn.commit()
+            for i in cur:
+                guests_ids[index] = i[0] 
 
             cur.close()
     except mariadb.Error as e:
@@ -201,6 +204,7 @@ for video in videos:
 
 
     print(guests_ids)
+    print(guests_in_db)
 
     # commit changes after each iteration
 
