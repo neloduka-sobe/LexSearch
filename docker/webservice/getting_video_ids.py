@@ -4,10 +4,9 @@
 import scrapetube # used to get playlist and videos data
 import spacy # used to find Guests names
 from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube transcripts
-import json # used to create json in order to add it into the database
+import json # used to create json
 import mariadb # used to connect to the mariadb database
 import sys # used to exit when exception occurs
-from time import sleep
 
 ### Constants
 PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
@@ -222,6 +221,22 @@ for video in videos:
         conn.close()
         sys.exit(1)
 
+    # adding timestamps
+
+    try:
+        if bool(is_transcript_enabled):
+            cur = conn.cursor(buffered=True)
+            cur.execute(
+            "INSERT INTO timestamps (episode_id, full_text, timestamp) VALUES (?,?,?)",
+            (episode_id, timestamp_full_text, json.dumps(timestamp_json),)
+            )
+            conn.commit()
+            cur.close()
+
+    except mariadb.Error as e:
+        print(f"Error 5: {e}")
+        conn.close()
+        sys.exit(1)
 
     # printing created vars
     '''
