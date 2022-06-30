@@ -31,6 +31,7 @@ CREATE TABLE `timestamps` (
 	`timestamp_id` int(11) NOT NULL AUTO_INCREMENT,
 	`episode_id` int(11) NOT NULL,
 	`full_text` mediumtext NOT NULL COLLATE utf8mb4_unicode_ci,
+	FULLTEXT(`full_text`),
 	`timestamp` json,
 	`last_edit_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`timestamp_id`)

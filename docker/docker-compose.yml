@@ -26,9 +26,9 @@ services:
                 volumes:
                         - ./webservice:/code
                 expose:
-                        - 2137
+                        - 5000
                 ports:  
-                        - 2137:2137
+                        - 5000:5000
                           # command: ['python3', 'main.py']
 networks:
         app_network:
