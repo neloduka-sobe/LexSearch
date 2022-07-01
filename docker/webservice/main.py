@@ -43,11 +43,11 @@ class Database:
         try:
             cur.execute(
             """
-            SELECT number, title, timestamp
-            FROM episodes, timestamps
-            WHERE episodes.episode_id = timestamps.episode_id AND MATCH(full_text) AGAINST(?) >= 0.5
+            SELECT number, title, time
+            FROM episodes, timestamps, parts
+            WHERE episodes.episode_id = timestamps.episode_id AND timestamps.timestamp_id = parts.timestamp_id AND MATCH(full_text) AGAINST(?) >= 0.8 AND MATCH(words) AGAINST(?) >= 0.8
             """,
-            (text,)
+            (text,text,)
             )
             ret = [i for i in cur]
             cur.close()
@@ -67,14 +67,17 @@ database = Database(USER, PASSWORD, HOST, PORT, DATABASE)
 def index():
     return "<p>Index site</p>"
 
-@app.route("/search/<text>")
+@app.route("/<text>")
 def search(text):
-    result = database.search(text)
-    return f"<p>Text: {result}</p>"
+    results = database.search(text)
+
+    return f"<p>Text: {results}</p>"
 
 
 try:
+
     if __name__ == "__main__":
         app.run(host="0.0.0.0")
+
 except KeyboardInterrupt:
    conn.close()

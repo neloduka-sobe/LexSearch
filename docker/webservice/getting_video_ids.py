@@ -74,8 +74,7 @@ for video in videos:
 
 
     # Creating data to be added into timestamps table
-    json_text_index = 0 # used to track the id of the character in the timestamp_full_text
-    timestamp_json = [] # timestamp jeson to be added to the database
+    parts_of_the_text = {} # parts of the text to be added to the database
     timestamp_full_text = '' # full text of the podcast to be added to the database
     is_transcript_enabled = 1 # states whether there is a transcript for the episode
 
@@ -92,15 +91,8 @@ for video in videos:
         # iterating through every verse of the transcript
         for part in srt:
             timestamp_full_text += (part.get('text') + ' ') # adding new verse to the full text
-            dlength= (len(part.get('text')) + 1) # getting the length of the added text
+            parts_of_the_text[part.get('start')] = part.get('text')
 
-            timestamp_json.append({
-                "first_index": json_text_index,
-                "last_index": (json_text_index + dlength),
-                "start_time": part.get('start')
-                })
-
-            json_text_index += dlength
 
 
 
@@ -138,8 +130,6 @@ for video in videos:
 
 
 
-    ###############################
-    # ADD DATA TO THE DATABASE TODO
 
     # checking whether guests are already in the database
     guests_ids = [None for i in guests] # database ids of the guests
@@ -227,16 +217,44 @@ for video in videos:
         if bool(is_transcript_enabled):
             cur = conn.cursor(buffered=True)
             cur.execute(
-            "INSERT INTO timestamps (episode_id, full_text, timestamp) VALUES (?,?,?)",
-            (episode_id, timestamp_full_text, json.dumps(timestamp_json),)
+            "INSERT INTO timestamps (episode_id, full_text) VALUES (?,?)",
+            (episode_id, timestamp_full_text,)
             )
             conn.commit()
+
+            # get id of an added timestamp
+            cur.execute(
+            "SELECT timestamp_id FROM timestamps WHERE episode_id=?;",
+            (episode_id,)
+            )
+            conn.commit()
+
+            for i in cur:
+                timestamp_id = i[0]
             cur.close()
 
     except mariadb.Error as e:
         print(f"Error 5: {e}")
         conn.close()
         sys.exit(1)
+
+
+    # Adding parts to the parts table
+
+    try:
+        if bool(is_transcript_enabled):
+            for key, value in parts_of_the_text.items():
+                cur = conn.cursor(buffered=True)
+                cur.execute(
+                "INSERT INTO parts (timestamp_id, time, words) VALUES (?,?,?)",
+                (timestamp_id, key, value )
+                )
+                conn.commit()
+            cur.close()
+    except mariadb.Error as e:
+        print(f"Error 6: {e}")
+        conn.close()
+        sys.exit()
 
     # printing created vars
     '''

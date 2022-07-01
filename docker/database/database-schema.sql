@@ -32,8 +32,19 @@ CREATE TABLE `timestamps` (
 	`episode_id` int(11) NOT NULL,
 	`full_text` mediumtext NOT NULL COLLATE utf8mb4_unicode_ci,
 	FULLTEXT(`full_text`),
-	`timestamp` json,
 	`last_edit_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`timestamp_id`)
-); ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
+
+DROP TABLE IF EXISTS `parts`;
+CREATE TABLE `parts` (
+	`part_id` int(11) NOT NULL AUTO_INCREMENT,
+	`timestamp_id` int(11) NOT NULL,
+	`time` double,
+       	`words` text,
+	FULLTEXT(`words`),
+	PRIMARY KEY(`part_id`)	
+)
+
+; ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
