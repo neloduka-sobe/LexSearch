@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Imports
-from flask import Flask
+from flask import Flask, render_template, url_for, redirect, request
 import mariadb # to connect to the database
 import sys
 
@@ -43,11 +43,12 @@ class Database:
         try:
             cur.execute(
             """
-            SELECT number, title, time
-            FROM episodes, timestamps, parts
-            WHERE episodes.episode_id = timestamps.episode_id AND timestamps.timestamp_id = parts.timestamp_id AND MATCH(full_text) AGAINST(?) >= 0.8 AND MATCH(words) AGAINST(?) >= 0.8
+            SELECT number, title, name, time, yt_id
+            FROM episodes, timestamps, parts, guests, appearances
+            WHERE episodes.episode_id = timestamps.episode_id AND timestamps.timestamp_id = parts.timestamp_id AND guests.guest_id = appearances.guest_id AND appearances.episode_id = episodes.episode_id  AND MATCH(full_text) AGAINST(?) >= 0.8 AND MATCH(words) AGAINST(?) >= 0.8
+            ORDER BY MATCH(words) AGAINST(?) DESC
             """,
-            (text,text,)
+            (text,text,text,)
             )
             ret = [i for i in cur]
             cur.close()
@@ -63,21 +64,30 @@ app = Flask(__name__)
 
 database = Database(USER, PASSWORD, HOST, PORT, DATABASE)
 
-@app.route("/")
+@app.route("/", methods = ["POST", "GET"])
 def index():
-    return "<p>Index site</p>"
+    if request.method == 'POST':
+        return redirect(f"/{request.form['content']}")
+    else:
+        return render_template("index.html")
 
-@app.route("/<text>")
+@app.route("/<text>", methods = ["POST", "GET"])
 def search(text):
-    results = database.search(text)
+    if request.method == "POST":
+        return  redirect(f"/{request.form['content']}")
+    else:
+        results = database.search(text)
 
-    return f"<p>Text: {results}</p>"
+        return  render_template("results.html", results=results)
 
 
+
+### Executing main function
 try:
 
     if __name__ == "__main__":
         app.run(host="0.0.0.0")
 
 except KeyboardInterrupt:
-   conn.close()
+   database.conn.close()
+   del database
