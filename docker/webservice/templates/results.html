@@ -20,14 +20,12 @@
 			<th>Episode number</th>
 			<th>Title</th>
 			<th>Guest</th>
-			<th>Approximate time</th>
 		</tr>
 		{% for result in results %}
 		<tr>
 			<td>{{ result[0] }}</td>
-			<td> <a href="https://www.youtube.com/watch?v={{ result[4] }}">{{ result[1] }}</td>
+			<td> <a href="https://youtu.be/{{ result[4] }}?t={{ result[3] }}" target="_blank">{{ result[1] }}</td>
 			<td> {{ result[2] }}</td>
-			<td> {{ result[3] }}</td>
 		</tr>
 		{% endfor %}
 	</table>

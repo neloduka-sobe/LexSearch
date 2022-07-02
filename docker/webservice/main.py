@@ -4,6 +4,7 @@
 from flask import Flask, render_template, url_for, redirect, request
 import mariadb # to connect to the database
 import sys
+import math
 
 
 # Constans
@@ -43,14 +44,14 @@ class Database:
         try:
             cur.execute(
             """
-            SELECT number, title, name, time, yt_id
+            SELECT distinct number, title, name, time, yt_id
             FROM episodes, timestamps, parts, guests, appearances
-            WHERE episodes.episode_id = timestamps.episode_id AND timestamps.timestamp_id = parts.timestamp_id AND guests.guest_id = appearances.guest_id AND appearances.episode_id = episodes.episode_id  AND MATCH(full_text) AGAINST(?) >= 0.8 AND MATCH(words) AGAINST(?) >= 0.8
+            WHERE episodes.episode_id = timestamps.episode_id AND timestamps.timestamp_id = parts.timestamp_id AND guests.guest_id = appearances.guest_id AND appearances.episode_id = episodes.episode_id   AND MATCH(words) AGAINST(?) >= 0.8
             ORDER BY MATCH(words) AGAINST(?) DESC
             """,
-            (text,text,text,)
+            (text,text,)
             )
-            ret = [i for i in cur]
+            ret = [list(i) for i in cur]
             cur.close()
             return ret
 
@@ -77,6 +78,9 @@ def search(text):
         return  redirect(f"/{request.form['content']}")
     else:
         results = database.search(text)
+
+        for result in results:
+            result[3] = math.floor(result[3])
 
         return  render_template("results.html", results=results)
 
