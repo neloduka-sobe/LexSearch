@@ -89,9 +89,15 @@ for video in videos:
     finally:
 
         # iterating through every verse of the transcript
+        i = 0
         for part in srt:
-            timestamp_full_text += (part.get('text') + ' ') # adding new verse to the full text
-            parts_of_the_text[part.get('start')] = part.get('text')
+            if i % 2 == 1:
+                timestamp_full_text += (part.get('text') + " " + last_text) # adding new verse to the full text
+                parts_of_the_text[last_time] = last_text + ' ' + part.get('text')
+            else:
+                last_time = part.get('start')
+                last_text = part.get('text')
+            i += 1
 
 
 
@@ -246,8 +252,8 @@ for video in videos:
             for key, value in parts_of_the_text.items():
                 cur = conn.cursor(buffered=True)
                 cur.execute(
-                "INSERT INTO parts (timestamp_id, time, words) VALUES (?,?,?)",
-                (timestamp_id, key, value )
+                "INSERT INTO parts (episode_id, time, words) VALUES (?,?,?)",
+                (episode_id, key, value )
                 )
                 conn.commit()
             cur.close()

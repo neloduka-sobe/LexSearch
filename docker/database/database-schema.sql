@@ -40,7 +40,7 @@ CREATE TABLE `timestamps` (
 DROP TABLE IF EXISTS `parts`;
 CREATE TABLE `parts` (
 	`part_id` int(11) NOT NULL AUTO_INCREMENT,
-	`timestamp_id` int(11) NOT NULL,
+	`episode_id` int(11) NOT NULL,
 	`time` double,
        	`words` text,
 	FULLTEXT(`words`),
