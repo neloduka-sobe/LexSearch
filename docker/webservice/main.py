@@ -46,7 +46,7 @@ class Database:
             """
             SELECT number, title, name, time, yt_id
             FROM episodes, parts, guests, appearances
-            WHERE episodes.episode_id in (select distinct episode_id from timestamps where MATCH(full_text) AGAINST(?) >= 0.9 LIMIT 30) AND episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND parts.episode_id = episodes.episode_id AND MATCH(words) AGAINST(?) >= 0.7
+            WHERE episodes.episode_id in (select distinct episode_id from timestamps where MATCH(full_text) AGAINST(?) >= 0.9) AND episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND parts.episode_id = episodes.episode_id AND MATCH(words) AGAINST(?) >= 0.7
             ORDER BY MATCH(words) AGAINST(?) desc
             LIMIT 50;
             """,
