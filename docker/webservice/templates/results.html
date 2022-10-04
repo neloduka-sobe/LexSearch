@@ -20,12 +20,26 @@
 			<th>Episode number</th>
 			<th>Title</th>
 			<th>Guest</th>
+			<th>Button</th>
 		</tr>
 		{% for result in results %}
 		<tr>
 			<td>{{ result[0] }}</td>
-			<td> <a href="https://youtu.be/{{ result[3] }}" target="_blank">{{ result[1] }}</td>
+
+			{% if  leng == 4 %}
+				<td> <a href="https://youtu.be/{{ result[3] }}" target="_blank">{{ result[1] }}</td>
+			{% elif leng == 5 %}
+				<td> <a href="https://youtu.be/{{ result[3] }}?t={{ result[4] }}" target="_blank">{{ result[1] }}</td>
+			{% endif %}
 			<td> {{ result[2] }}</td>
+			<td>
+				{% if  leng == 4 %}
+					<form action="/{{text}}/{{ result[0] }}/" method="get">
+						<input type="submit" value="Find time">
+					</form>
+				{% endif %}
+
+			</td>
 		</tr>
 		{% endfor %}
 	</table>

@@ -68,13 +68,13 @@ class Database:
         try:
             cur.execute(
             """
-            SELECT time
-            FROM parts
-            WHERE parts.episode_id = ?
+            SELECT number, title, name, yt_id, time
+            FROM parts, episodes, guests, appearances
+            WHERE parts.episode_id = ? AND episodes.episode_id = ? AND appearances.episode_id = ? AND appearances.guest_id = guests.guest_id
             ORDER BY MATCH(words) AGAINST(?) desc
             LIMIT 50;
             """,
-            (video_id,text,)
+            (video_id, video_id, video_id, text,)
             )
             ret = [list(i) for i in cur]
             cur.close()
@@ -104,7 +104,16 @@ def search(text):
     else:
         results = database.search_video_id(text)
 
-        return  render_template("results.html", results=results)
+        return  render_template("results.html", results=results, text=text, leng=len(results[0]))
+
+@app.route("/<text>/<video_id>/", methods = ["POST", "GET"])
+def find_time(text, video_id):
+    if request.method == "POST":
+        return redirect(f"/{request.form['content']}")
+    else:
+        results = database.search_specific_time(text, video_id)
+
+        return  render_template("results.html", results=results, text=text, leng=len(results[0]))
 
 
 
