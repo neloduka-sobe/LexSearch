@@ -40,17 +40,18 @@ class Database:
 
     def search_video_id(self, text):
         cur = self.conn.cursor(buffered=True) 
+        #text =  '+' + "+".join(text.split())
 
         try:
             cur.execute(
             """
             SELECT number, title, name, yt_id 
             FROM episodes, guests, appearances, timestamps
-            WHERE episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND timestamps.episode_id = episodes.episode_id
+            WHERE episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND timestamps.episode_id = episodes.episode_id AND MATCH(full_text) AGAINST(?) >= 0.7
             ORDER BY MATCH(full_text) AGAINST(?) desc
             LIMIT 25;
             """,
-            (text,)
+            (text, text,)
             )
             ret = [list(i) for i in cur]
             cur.close()
@@ -64,6 +65,7 @@ class Database:
     
     def search_specific_time(self, text, video_number):
         cur = self.conn.cursor(buffered=True) 
+        #text =  '+' + "+".join(text.split())
 
         try:
             cur.execute(
@@ -74,7 +76,7 @@ class Database:
             ORDER BY MATCH(words) AGAINST(?) desc
             LIMIT 15;
             """,
-            (video_number, text,)
+            (video_number, text, text,)
             )
             ret = [list(i) for i in cur]
             cur.close()
