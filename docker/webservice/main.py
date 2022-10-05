@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Imports
-from flask import Flask, render_template, url_for, redirect, request
+from flask import Flask, render_template, url_for, redirect, request, flash
 import mariadb # to connect to the database
 import sys
 import math
@@ -89,7 +89,7 @@ class Database:
             sys.exit(1)
 
 app = Flask(__name__)
-
+app.secret_key = 'hgsestroiuedxcqwfrc26c5c6'
 database = Database(USER, PASSWORD, HOST, PORT, DATABASE)
 
 @app.route("/", methods = ["POST", "GET"])
@@ -105,6 +105,10 @@ def search(text):
         return  redirect(f"/{request.form['content']}")
     else:
         results = database.search_video_id(text)
+        
+        if len(results) == 0:
+            flash("No results were found")
+            return redirect('/')
 
         return  render_template("results.html", results=results, text=text, leng=len(results[0]))
 
@@ -116,6 +120,10 @@ def find_time(text, video_id):
         results = database.search_specific_time(text, video_id)
         for i in range(len(results)):
             results[i][4] = math.floor(results[i][4])
+
+        if len(results) == 0:
+            flash("No results were found")
+            return redirect('/')
 
         return  render_template("results.html", results=results, text=text, leng=len(results[0]))
 
