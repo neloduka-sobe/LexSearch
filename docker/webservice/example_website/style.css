@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Kalam&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kristi&display=swap");
+
+body {
+	background: #292f33;
+	color: #e1e8ed;
+	font-family: 'Kalam', cursive, 'Kristi', cursive;
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	background-size: 100%;
+	background-position: center;
+	padding: 20px;
+	margin-bottom: none;
+	text-align: center;
+	margin-top: 15%;
+	font-size: 35px;
+}
+ul {
+	list-style: none;
+	margin-top: none;
+	clear: both;
+	text-align: center;
+	display: table;
+	margin: 0 auto;
+	font-size: 25px;
+}
+ul li {
+	float: left;
+	margin-right: 10px;
+	padding-right: 10px;
+}
+li:last-child {
+	border-right: none;	
+}
+a:link {
+	color: #55acee;
+	text-decoration: none;
+}
+a:visited {
+	color: #55acee;
+	text-decoration: none;
+}
+a:hover {
+	color: #cc56dd;
+	text-decoration: none;
+}
+a:active {
+	color: #cc56dd;
+}
+p {
+	font-size: 20px;
+	text-align: center; 
+}
+
+footer {
+	margin: none;
+	padding: none;
+	text-align: center;
+}
+
+
+@media screen and (max-width: 432px) {
+ul li {
+	font-size: 20px;
+}
+
+}
+
+@media screen and (max-width: 377px) {
+ul li {
+        font-size: 15px;
+}
+
+}
+
