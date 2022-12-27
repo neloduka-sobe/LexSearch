@@ -2,8 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Kristi&display=swap");
 
 body {
-	background: #292f33;
-	color: #e1e8ed;
+	background: #E6E6E6;
+	color: #4285F4;
 	font-family: 'Kalam', cursive, 'Kristi', cursive;
 	margin: 0;
 	padding: 0;
@@ -36,7 +36,7 @@ li:last-child {
 	border-right: none;	
 }
 a:link {
-	color: #55acee;
+	color: #DB4437;
 	text-decoration: none;
 }
 a:visited {
@@ -44,11 +44,11 @@ a:visited {
 	text-decoration: none;
 }
 a:hover {
-	color: #cc56dd;
+	color: #0F9D58;
 	text-decoration: none;
 }
 a:active {
-	color: #cc56dd;
+	color: #0F9D58;
 }
 p {
 	font-size: 20px;
@@ -59,6 +59,14 @@ footer {
 	margin: none;
 	padding: none;
 	text-align: center;
+}
+
+.button {
+	background-color: #DB4437;
+	color: #E6E6E6;
+	border: none;
+	border-radius: 4px;
+	padding: 3px 3px
 }
 
 
@@ -74,5 +82,16 @@ ul li {
         font-size: 15px;
 }
 
+
 }
 
+.content {
+	margin: 0 auto;
+	width: 400px;
+}
+
+.form {
+    	text-align: center;
+    	vertical-align: middle;	
+
+}

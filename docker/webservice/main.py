@@ -89,20 +89,20 @@ class Database:
             sys.exit(1)
 
 app = Flask(__name__)
-app.secret_key = 'hgsestroiuedxcqwfrc26c5c6'
+app.secret_key = 'SECRET_KEY'
 database = Database(USER, PASSWORD, HOST, PORT, DATABASE)
 
 @app.route("/", methods = ["POST", "GET"])
 def index():
-    if request.method == 'POST':
-        return redirect(f"/{request.form['content']}")
+    if request.method == 'POST' and request.form['content'] != '':
+        return redirect(f"/{request.form['content']}/")
     else:
         return render_template("index.html")
 
 @app.route("/<text>/", methods = ["POST", "GET"])
 def search(text):
-    if request.method == "POST":
-        return  redirect(f"/{request.form['content']}")
+    if request.method == "POST" and request.form['content'] != '':
+        return  redirect(f"/{request.form['content']}/")
     else:
         results = database.search_video_id(text)
         
@@ -115,7 +115,7 @@ def search(text):
 @app.route("/<text>/<video_id>/", methods = ["POST", "GET"])
 def find_time(text, video_id):
     if request.method == "POST":
-        return redirect(f"/{request.form['content']}")
+        return redirect(f"/{request.form['content']}/")
     else:
         results = database.search_specific_time(text, video_id)
         for i in range(len(results)):

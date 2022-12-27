@@ -13,14 +13,16 @@
         <div class="form">
         <form action="/" method="POST">
                 <input type="text" name="content", id=content>
-                <input type="submit" value="Add Task">
+                <input class="button" type="submit" value="Search">
         </form>
 	<table>
 		<tr>
 			<th>Episode number</th>
 			<th>Title</th>
 			<th>Guest</th>
-			<th>Button</th>
+			{% if leng == 4 %}
+			<th>Search time</th>
+			{% endif %}
 		</tr>
 		{% for result in results %}
 		<tr>
@@ -35,7 +37,7 @@
 			<td>
 				{% if  leng == 4 %}
 					<form action="/{{text}}/{{ result[0] }}/" method="get">
-						<input type="submit" value="Find time">
+						<input class="button" type="submit" value="Find time">
 					</form>
 				{% endif %}
 
@@ -45,5 +47,8 @@
 	</table>
         </div>
 </div>
+<footer>
+	<h6>Created by neloduka_sobe</h6>
+</footer>
 {% endblock %}
 
