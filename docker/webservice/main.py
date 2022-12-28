@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-# Imports
+### Imports
 from flask import Flask, render_template, url_for, redirect, request, flash
-import mariadb # to connect to the database
+import mariadb  # to connect to the database
 import sys
 import math
 
 
-# Constans
+### Constans
 USER = "root"
 PASSWORD = "mypass"
 HOST = "database"
@@ -40,7 +40,6 @@ class Database:
 
     def search_video_id(self, text):
         cur = self.conn.cursor(buffered=True) 
-        #text =  '+' + "+".join(text.split())
 
         try:
             cur.execute(
@@ -65,7 +64,6 @@ class Database:
     
     def search_specific_time(self, text, video_number):
         cur = self.conn.cursor(buffered=True) 
-        #text =  '+' + "+".join(text.split())
 
         try:
             cur.execute(
