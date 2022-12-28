@@ -25,7 +25,9 @@ Example search results with timestamps
 Docker is required to setup.
 
 ```bash
+git clone https://github.com/neloduka-sobe/LexSearch.git
+cd docker
 docker-compose up -d --build
 ```
 
-Wait for the script to download all data from API and add it to the database. You can track progress via ```bash docker logs webservice```. After the first script finishes, the website should be available on 0.0.0.0:5000.
+Wait for the script to download all data from API and add it to the database. You can track progress via ```docker logs webservice```. After the first script finishes, the website should be available on 0.0.0.0:5000.
