@@ -4,7 +4,6 @@
 import scrapetube # used to get playlist and videos data
 import spacy # used to find Guests names
 from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube transcripts
-import json # used to create json
 import mariadb # used to connect to the mariadb database
 import sys # used to exit when exception occurs
 
@@ -263,17 +262,6 @@ for video in videos:
         sys.exit()
 
     # printing created vars
-    '''
-    print(f"{yt_id=}")
-    print(f"{first_part=}")
-    print(f"{second_part=}")
-    print(f"{third_part=}")
-    print(f"{video_number=}")
-    print(f"{yt_title=}")
-    print(f"{guests=}")
-    print(f"{timestamp_json=}")
-    print()
-    '''
 
 # closing connection with the database
 conn.close()

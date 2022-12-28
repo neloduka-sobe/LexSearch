@@ -29,6 +29,6 @@ services:
                         - 5000
                 ports:  
                         - 5000:5000
-                          # command: ['python3', 'main.py']
+                command: python3 getting_video_ids.py && python3 main.py
 networks:
         app_network:
