@@ -198,7 +198,6 @@ for video in videos:
 
     print(f"{guests_ids=}")
     print(f"{guests_in_db=}")
-    print(f"{timestamp_full_text=}")
 
     # adding appearances
 
