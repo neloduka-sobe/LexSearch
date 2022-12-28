@@ -33,6 +33,7 @@ services:
                         - /bin/sh
                         - -c
                         - |
+                          sleep 2
                           python3 getting_video_ids.py
                           python3 main.py
 networks:
