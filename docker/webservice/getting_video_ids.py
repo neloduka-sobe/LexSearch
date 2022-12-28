@@ -91,7 +91,7 @@ for video in videos:
         i = 0
         for part in srt:
             if i % 2 == 1:
-                timestamp_full_text += (part.get('text') + " " + last_text)  # adding new verse to the full text
+                timestamp_full_text += (" " + part.get('text') + " " + last_text)  # adding new verse to the full text
                 parts_of_the_text[last_time] = last_text + ' ' + part.get('text')
             else:
                 last_time = part.get('start')
@@ -198,6 +198,7 @@ for video in videos:
 
     print(f"{guests_ids=}")
     print(f"{guests_in_db=}")
+    print(f"{timestamp_full_text=}")
 
     # adding appearances
 

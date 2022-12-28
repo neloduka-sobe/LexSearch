@@ -46,11 +46,11 @@ class Database:
             """
             SELECT number, title, name, yt_id 
             FROM episodes, guests, appearances, timestamps
-            WHERE episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND timestamps.episode_id = episodes.episode_id AND MATCH(full_text) AGAINST(?) >= 0.2
+            WHERE episodes.episode_id = appearances.episode_id AND guests.guest_id = appearances.guest_id AND timestamps.episode_id = episodes.episode_id 
             ORDER BY MATCH(full_text) AGAINST(?) desc
             LIMIT 25;
             """,
-            (text, text,)
+            (text,)
             )
             ret = [list(i) for i in cur]
             cur.close()
