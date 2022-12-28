@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 ### Imports
-import scrapetube # used to get playlist and videos data
-import spacy # used to find Guests names
+import scrapetube  # used to get playlist and videos data
+import spacy  # used to find Guests names
 from youtube_transcript_api import YouTubeTranscriptApi # used to get youtube transcripts
-import mariadb # used to connect to the mariadb database
-import sys # used to exit when exception occurs
+import mariadb  # used to connect to the mariadb database
+import sys  # used to exit when exception occurs
 
 ### Constants
-PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4" # Youtube id of playlist containing all podcast episodes
-FALSE_POSITIVES_NAMES = ["Black Holes", "Email", "Oumuamua", "Deep Learning", "Carl Sagan", "Wu-Tang Clan", "Comedy"] # False positive recognised guests
-PROBLEMATIC_GUESTS = ["Luís and João Batalha", "Dmitry Korkin"] # Guests that are not recognised correctly by spacy
-BLOCKED_VIDEOS_IDS = ['6ePR2TWYVkI'] # Youtube id's of the videos that are not part of a podcast
+PODCAST_PLAYLIST = "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4"  # Youtube id of playlist containing all podcast episodes
+FALSE_POSITIVES_NAMES = ["Black Holes", "Email", "Oumuamua", "Deep Learning", "Carl Sagan", "Wu-Tang Clan", "Comedy"]  # False positive recognised guests
+PROBLEMATIC_GUESTS = ["Luís and João Batalha", "Dmitry Korkin"]  # Guests that are not recognised correctly by spacy
+BLOCKED_VIDEOS_IDS = ['6ePR2TWYVkI']  # Youtube id's of the videos that are not part of a podcast
 
 ### Setups
 npl = spacy.load("en_core_web_sm")
@@ -48,7 +48,7 @@ for video in videos:
     # Finding all entities in first_part
 
     doc = npl(first_part)
-    guests = [] # array containing episode guests
+    guests = []  # array containing episode guests
 
     # if guest is known for being problematic for spacy then use first_part as guest name
     if first_part in PROBLEMATIC_GUESTS:
@@ -73,9 +73,9 @@ for video in videos:
 
 
     # Creating data to be added into timestamps table
-    parts_of_the_text = {} # parts of the text to be added to the database
-    timestamp_full_text = '' # full text of the podcast to be added to the database
-    is_transcript_enabled = 1 # states whether there is a transcript for the episode
+    parts_of_the_text = {}  # parts of the text to be added to the database
+    timestamp_full_text = ''  # full text of the podcast to be added to the database
+    is_transcript_enabled = 1  # states whether there is a transcript for the episode
 
     try:
         srt = YouTubeTranscriptApi.get_transcript(yt_id)
@@ -91,7 +91,7 @@ for video in videos:
         i = 0
         for part in srt:
             if i % 2 == 1:
-                timestamp_full_text += (part.get('text') + " " + last_text) # adding new verse to the full text
+                timestamp_full_text += (part.get('text') + " " + last_text)  # adding new verse to the full text
                 parts_of_the_text[last_time] = last_text + ' ' + part.get('text')
             else:
                 last_time = part.get('start')
@@ -137,7 +137,7 @@ for video in videos:
 
 
     # checking whether guests are already in the database
-    guests_ids = [None for i in guests] # database ids of the guests
+    guests_ids = [None for i in guests]  # database ids of the guests
     guests_in_db = [False for i in guests]
 
     try:
@@ -196,8 +196,8 @@ for video in videos:
 
 
 
-    print(guests_ids)
-    print(guests_in_db)
+    print(f"{guests_ids=}")
+    print(f"{guests_in_db=}")
 
     # adding appearances
 
@@ -260,8 +260,6 @@ for video in videos:
         print(f"Error 6: {e}")
         conn.close()
         sys.exit()
-
-    # printing created vars
 
 # closing connection with the database
 conn.close()
